@@ -16,5 +16,4 @@ public class BaseResponse<T> {
   private T data;
   //текст ошибки, в случае, если операция прошла с ошибкой (не обязательное поле)
   private String message;
-
 }

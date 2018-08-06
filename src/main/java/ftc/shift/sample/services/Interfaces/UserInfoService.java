@@ -1,30 +1,50 @@
 package ftc.shift.sample.services.Interfaces;
 
+import ftc.shift.sample.entities.Recipe;
 import ftc.shift.sample.entities.UserInfo;
+import ftc.shift.sample.entities.enums.StateByProduct;
 import lombok.NonNull;
+
+import java.util.Collection;
+import java.util.Map;
 
 public interface UserInfoService {
 
-    //IllegalArgumentException("Вы ввели неправильный пароль")
-    //IllegalArgumentException("Пользователя с таким логином не существует")
-    //UserValidInfo createToken(@NonNull UserLogin userLogin);
+    Collection<Recipe> getAllRecipesByUserInfo(@NonNull Long idUserInfo);
 
-    //IllegalArgumentException("Пользователя с таким логином не существует")
-    //void deleteToken(@NonNull UserValidInfo userValidInfo);
+    void createRecipeByUserInfo(@NonNull Long idUserInfo, @NonNull Recipe recipe);
 
-    //Boolean checkAccess(@NonNull UserValidInfo userValidInfo);
+    UserInfo provideUserInfo(@NonNull Long idUserInfo);
 
-    //UserInfo provideUserInfo(@NonNull String idUser);
+    void deleteUserInfo(@NonNull Long idUserInfo);
 
-    //UserInfo updateUserInfo(@NonNull UserInfo userInfo);
+    void updateFirstName(@NonNull Long IdUserInfo, @NonNull String newFirstName);
 
-    //IllegalArgumentException("Этот логин уже существует")
-    //void registration(@NonNull UserLogin userLogin);
+    void updateSecondName(@NonNull Long IdUserInfo, @NonNull String newSecondName);
 
-    //void deleteUser(@NonNull String idUser);
+    void updateCity(@NonNull Long IdUserInfo, @NonNull String newCity);
 
-    //IllegalArgumentException("Пользователя с таким логином не существует")
-    //void updatePassword(@NonNull String idUser, @NonNull String newPassword);
+    void updateUniversity(@NonNull Long IdUserInfo, @NonNull String newUniversity);
 
-    void createUser(@NonNull UserInfo userInfo);
+    void updateDormitory(@NonNull Long IdUserInfo, @NonNull String newDormitory);
+
+    void updateRoom(@NonNull Long IdUserInfo, @NonNull String newRoom);
+
+    void updateLinkToVk(@NonNull Long IdUserInfo, @NonNull String newLinkToVk);
+
+    void updateLinkToTelegram(@NonNull Long IdUserInfo, @NonNull String newLinkToTelegram);
+
+    void updateCookRate(@NonNull Long IdUserInfo, @NonNull Double newCookRate);
+
+    void updateEatRate(@NonNull Long IdUserInfo, @NonNull Double newEatRate);
+
+    Map<Long, StateByProduct> getStatesForProductByRecipe(@NonNull Long idUserInfo);
+
+    void deleteStateForProductByRecipe(@NonNull Long idUserInfo, @NonNull Long idProductByRecipe);
+
+    void updateStateForProductByRecipe(@NonNull Long idUserInfo, @NonNull Long idProductByRecipe, @NonNull StateByProduct newState);
+
+    void createStateForProductByRecipe(@NonNull Long idUserInfo, @NonNull Long idProductByRecipe, @NonNull StateByProduct state);
+
+    StateByProduct getStateForProductByRecipe(@NonNull Long idUserInfo, @NonNull Long idProductByRecipe);
 }

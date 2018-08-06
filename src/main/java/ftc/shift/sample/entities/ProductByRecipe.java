@@ -2,7 +2,8 @@ package ftc.shift.sample.entities;
 
 import lombok.*;
 import javax.persistence.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @NoArgsConstructor
 @Data
@@ -10,9 +11,13 @@ import java.util.List;
 @Table(name = "ProductByRecipe")
 public class ProductByRecipe{
 
+    {
+        this.offers = new ArrayList<>();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @Column(name = "id",unique = true)
     private long id;
 
     @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
@@ -31,7 +36,7 @@ public class ProductByRecipe{
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "offers")
     @Column(name = "userInfoId")
-    private List<UserInfo> userInfos;
+    private Collection<UserInfo> offers;
 
     @Column(name = "Amount")
     private Double amount;

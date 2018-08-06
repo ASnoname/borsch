@@ -1,9 +1,12 @@
 package ftc.shift.sample.entities;
 
+import ftc.shift.sample.entities.enums.StateByProduct;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 @NoArgsConstructor
@@ -12,9 +15,15 @@ import java.util.Map;
 @Table(name = "UserInfo")
 public class UserInfo{
 
+    {
+        this.fridge = new Fridge();
+        this.recipes = new ArrayList<>();
+        this.stateByProductMap = new HashMap<>();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @Column(name = "id",unique = true)
     private long id;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -25,7 +34,7 @@ public class UserInfo{
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "recipesByUserInfoId")
     @Column(name = "recipe")
-    private List<Recipe> recipes;
+    private Collection<Recipe> recipes;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "stateByProduct")

@@ -11,7 +11,7 @@ public class ProductByFridge{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @Column(name = "id",unique = true)
     private long id;
 
     @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)

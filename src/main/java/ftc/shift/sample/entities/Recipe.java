@@ -2,7 +2,8 @@ package ftc.shift.sample.entities;
 
 import lombok.*;
 import javax.persistence.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @NoArgsConstructor
 @Data
@@ -10,9 +11,13 @@ import java.util.List;
 @Table(name = "Recipe")
 public class Recipe{
 
+    {
+        this.products = new ArrayList<>();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @Column(name = "id",unique = true)
     private long id;
 
     @Column(name = "name",length = 30)
@@ -26,5 +31,5 @@ public class Recipe{
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "productsInRecipe")
     @Column(name = "product")
-    private List<ProductByRecipe> products;
+    private Collection<ProductByRecipe> products;
 }
