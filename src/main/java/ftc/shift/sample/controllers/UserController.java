@@ -23,8 +23,6 @@
 //    @PostMapping(USERS_PATH+"/registration")
 //    public @ResponseBody
 //    BaseResponse createUser(@RequestBody UserLogin userLogin) {
-//        System.out.println(userLogin.userName);
-//        System.out.println(userLogin.password);
 //        BaseResponse response = new BaseResponse();
 //        services.registration(userLogin);
 //        return response;
@@ -39,7 +37,7 @@
 //        return response;
 //    }
 //
-//    @GetMapping(USERS_PATH+"/{userName}")
+//    @GetMapping(USERS_PATH+"/id{userName}")
 //    public @ResponseBody
 //    BaseResponse<UserInfo> createUser(@PathVariable String userName,final HttpServletRequest request) {
 //        BaseResponse<UserInfo> response = new BaseResponse<>();

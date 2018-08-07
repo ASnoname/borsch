@@ -20,16 +20,12 @@ public class FridgeServiceImpl implements FridgeService {
     }
 
     @Override
-    public void createProductByFridge(@NonNull Long idUserInfo, @NonNull ProductByFridge productByFridge) {
-
-        userInfoRepository.findById(idUserInfo).get().getFridge().getProducts().add(productByFridge);
-
-        productByFridge.setFridge(userInfoRepository.findById(idUserInfo).get().getFridge());
-    }
-
-    @Override
     public Collection<ProductByFridge> provideAllProductByFridge(@NonNull Long idUserInfo) {
 
-        return userInfoRepository.findById(idUserInfo).get().getFridge().getProducts();
+        return userInfoRepository
+                .findById(idUserInfo)
+                .get()
+                .getFridge()
+                .getProducts();
     }
 }

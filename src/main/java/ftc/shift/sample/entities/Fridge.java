@@ -22,10 +22,6 @@ public class Fridge{
     @Column(name = "id",unique = true)
     private long id;
 
-    @OneToOne(mappedBy = "fridge")
-    @JoinColumn(name = "userInfoId")
-    private UserInfo userInfo;
-
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "productsInFridge")

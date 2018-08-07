@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class ProductByRecipeServiceImpl implements ProductByRecipeService {
@@ -24,95 +25,52 @@ public class ProductByRecipeServiceImpl implements ProductByRecipeService {
     }
 
     @Override
-    public void updateProductByRecipe(ProductByRecipe productByRecipe) {
+    public Long createIdProductByRecipe(Long idRecipe) {
+        return null;
+    }
 
-        productByRecipeRepository
-                .save(productByRecipe);
+    @Override
+    public Long provideIdProductByRecipe(ProductByRecipe productByRecipe) {
+        return null;
+    }
+
+    @Override
+    public ProductByRecipe provideProductByRecipe(Long idProductByRecipe) {
+        return null;
     }
 
     @Override
     public void deleteProductByRecipe(Long idProductByRecipe) {
 
-        productByRecipeRepository
-                .deleteById(idProductByRecipe);
     }
 
     @Override
-    public ProductByRecipe getProductByRecipe(Long idProductByRecipe) {
-
-        return productByRecipeRepository
-                .findById(idProductByRecipe)
-                .get();
+    public List<UserInfo> provideOffers(Long idProductByRecipe) {
+        return null;
     }
 
     @Override
-    public UserInfo getFinalUserInfo(Long idProductByRecipe) {
-
-        return productByRecipeRepository
-                .findById(idProductByRecipe)
-                .get()
-                .getUserInfo();
+    public Long provideIdRecipe(Long idProductByRecipe) {
+        return null;
     }
 
     @Override
-    public void updateFinalUserInfo(Long idProductByRecipe, Long idUserInfo) {
+    public Long provideIdFood(Long idProductByRecipe) {
+        return null;
+    }
 
-        productByRecipeRepository
-                .findById(idProductByRecipe)
-                .get()
-                .setUserInfo(userInfoRepository
-                        .findById(idUserInfo)
-                        .get());
+    @Override
+    public Long provideIdUserInfo(Long idProductByRecipe) {
+        return null;
     }
 
     @Override
     public void clearFinalUserInfo(Long idProductByRecipe) {
 
-        productByRecipeRepository
-                .findById(idProductByRecipe)
-                .get()
-                .setUserInfo(null);
-    }
-
-    @Override
-    public Collection<UserInfo> getOffers(Long idProductByRecipe) {
-
-        return productByRecipeRepository
-                .findById(idProductByRecipe)
-                .get()
-                .getOffers();
-    }
-
-    @Override
-    public void addOffer(Long idProductByRecipe, Long idUserInfo) {
-
-        productByRecipeRepository
-                .findById(idProductByRecipe)
-                .get()
-                .getOffers()
-                .add(userInfoRepository
-                        .findById(idUserInfo)
-                        .get());
     }
 
     @Override
     public void clearOffers(Long idProductByRecipe) {
 
-        productByRecipeRepository
-                .findById(idProductByRecipe)
-                .get()
-                .setOffers(null);
-    }
-
-    @Override
-    public void deleteOffer(Long idProductByRecipe, Long idUserInfo) {
-
-        productByRecipeRepository
-                .findById(idProductByRecipe)
-                .get()
-                .getOffers()
-                .remove(userInfoRepository
-                        .findById(idUserInfo)
-                        .get());
     }
 }

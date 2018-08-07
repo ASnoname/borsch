@@ -4,7 +4,7 @@ import ftc.shift.sample.entities.enums.TypeFood;
 import lombok.*;
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 @NoArgsConstructor
 @Data
@@ -26,7 +26,7 @@ public class Food{
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "productsFromFridgesByFood")
     @Column(name = "products")
-    private Collection<ProductByFridge> products;
+    private List<ProductByFridge> products;
 
     @Column(name = "name",unique = true,length = 20)
     private String name;

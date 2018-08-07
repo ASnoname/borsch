@@ -4,6 +4,7 @@ import ftc.shift.sample.entities.ProductByRecipe;
 import ftc.shift.sample.entities.Recipe;
 import ftc.shift.sample.entities.UserInfo;
 import ftc.shift.sample.repositories.RecipeRepository;
+import ftc.shift.sample.repositories.UserInfoRepository;
 import ftc.shift.sample.services.Interfaces.RecipeService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,50 +16,83 @@ import java.util.*;
 public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
+    private final UserInfoRepository userInfoRepository;
 
     @Autowired
-    public RecipeServiceImpl(RecipeRepository recipeRepository) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, UserInfoRepository userInfoRepository) {
         this.recipeRepository = recipeRepository;
+        this.userInfoRepository = userInfoRepository;
     }
 
     @Override
-    public Recipe getRecipe(@NonNull Long idRecipe) {
-        return recipeRepository.findById(idRecipe).get();
+    public Long createRecipe(@NonNull Long idUserInfo) {
+
+        Recipe recipe = new Recipe();
+
+        recipe
+                .setUserInfo(userInfoRepository
+                        .findById(idUserInfo)
+                        .get());
+
+        userInfoRepository
+                .findById(idUserInfo)
+                .get()
+                .getRecipes()
+                .add(recipe);
+
+        recipeRepository.save(recipe);
+
+        return recipe.getId();
     }
 
     @Override
-    public void updateName(@NonNull Long idRecipe, @NonNull String newName) {
-        recipeRepository.findById(idRecipe).get().setName(newName);
+    public Recipe provideRecipe(@NonNull Long idRecipe) {
+
+        return recipeRepository
+                .findById(idRecipe)
+                .get();
     }
 
     @Override
     public void deleteRecipe(@NonNull Long idRecipe) {
+
+        userInfoRepository
+                .findById(recipeRepository
+                        .findById(idRecipe)
+                        .get()
+                        .getUserInfo()
+                        .getId())
+                .get()
+                .getRecipes()
+                .remove(recipeRepository
+                        .findById(idRecipe)
+                        .get());
+
         recipeRepository.deleteById(idRecipe);
     }
 
     @Override
-    public Collection<ProductByRecipe> getProductsByRecipe(@NonNull Long idRecipe) {
-        return recipeRepository.findById(idRecipe).get().getProducts();
+    public Collection<ProductByRecipe> provideProductsByRecipe(@NonNull Long idRecipe) {
+
+        return recipeRepository
+                .findById(idRecipe)
+                .get()
+                .getProducts();
     }
 
     @Override
-    public void createProductByRecipe(@NonNull Long idRecipe, @NonNull ProductByRecipe productByRecipe) {
-        recipeRepository.findById(idRecipe).get().getProducts().add(productByRecipe);
+    public Map<Long, UserInfo> provideFinalUsersFromRecipe(@NonNull Long idRecipe) {
 
-        productByRecipe.setRecipe(recipeRepository.findById(idRecipe).get());
-    }
-
-    @Override
-    public List<UserInfo> getFinalUsersFromRecipe(@NonNull Long idRecipe) {
-
-        List<UserInfo> userInfoList = new ArrayList<>();
+        Map<Long, UserInfo> finalUsersFromRecipe = new HashMap<>();
 
         recipeRepository
                 .findById(idRecipe)
                 .get()
                 .getProducts()
-                .forEach(productByRecipe -> userInfoList.add(productByRecipe.getUserInfo()));
+                .parallelStream()
+        .forEach(productByRecipe -> finalUsersFromRecipe
+                .put(productByRecipe.getId(),productByRecipe.getUserInfo()));
 
-        return userInfoList;
+        return finalUsersFromRecipe;
     }
 }

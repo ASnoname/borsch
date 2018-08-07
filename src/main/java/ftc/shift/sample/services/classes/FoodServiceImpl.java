@@ -1,7 +1,7 @@
 package ftc.shift.sample.services.classes;
 
 import ftc.shift.sample.entities.Food;
-import ftc.shift.sample.entities.enums.TypeFood;
+import ftc.shift.sample.entities.ProductByFridge;
 import ftc.shift.sample.repositories.FoodRepository;
 import ftc.shift.sample.services.Interfaces.FoodService;
 import lombok.NonNull;
@@ -19,57 +19,53 @@ public class FoodServiceImpl implements FoodService {
 
     @Autowired
     public FoodServiceImpl(final FoodRepository foodRepository) {
+
         this.foodRepository = foodRepository;
     }
 
     @Override
     public Food provideFood(@NonNull Long idFood) {
 
-        return foodRepository.findById(idFood).get();
-    }
-
-    @Override
-    public void updateName(@NonNull Long idFood, @NonNull String newName) {
-
-        foodRepository.findById(idFood).get().setName(newName);
-    }
-
-    @Override
-    public TypeFood provideCategory(Long idFood) {
-
-        return foodRepository.findById(idFood).get().getCategory();
-    }
-
-    @Override
-    public void updateCategory(Long idFood, TypeFood newTypeFood) {
-
-        foodRepository.findById(idFood).get().setCategory(newTypeFood);
+        return foodRepository
+                .findById(idFood)
+                .get();
     }
 
     @Override
     public void deleteFood(@NonNull Long idFood) {
+
         foodRepository.deleteById(idFood);
     }
 
     @Override
-    public void createFood(@NonNull Food food) {
+    public Long createFood() {
+
+        Food food = new Food();
+
         foodRepository.save(food);
+
+        return food.getId();
     }
 
     @Override
-    public Iterable<Food> provideAllFoods() {
-        return foodRepository.findAll();
-    }
-
-    @Override
-    public List<Food> getListFoodStartWith(@NonNull String startNameOfFood) {
+    public List<Food> provideListFoodStartWith(@NonNull String startNameOfFood) {
 
         List<Food> fitFoods = new ArrayList<>();
 
-        StreamSupport.stream(foodRepository.findAll().spliterator(), true)
+        StreamSupport.stream(foodRepository.findAll().spliterator(), false)
                 .filter(food -> (food.getName().length() >= startNameOfFood.length()))
                 .filter(food -> food.getName().startsWith(startNameOfFood))
                 .forEach(fitFoods::add);
+
         return fitFoods;
+    }
+
+    @Override
+    public List<ProductByFridge> provideListProductByFridge(@NonNull Long idFood) {
+
+        return foodRepository
+                .findById(idFood)
+                .get()
+                .getProducts();
     }
 }

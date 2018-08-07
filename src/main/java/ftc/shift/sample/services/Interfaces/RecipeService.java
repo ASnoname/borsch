@@ -6,19 +6,17 @@ import ftc.shift.sample.entities.UserInfo;
 import lombok.NonNull;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 public interface RecipeService {
 
-    Recipe getRecipe(@NonNull Long idRecipe);
+    Long createRecipe(@NonNull Long idUserInfo);
 
-    void updateName(@NonNull Long idRecipe, @NonNull String newName);
+    Recipe provideRecipe(@NonNull Long idRecipe);
 
     void deleteRecipe(@NonNull Long idRecipe);
 
-    Collection<ProductByRecipe> getProductsByRecipe(@NonNull Long idRecipe);
+    Collection<ProductByRecipe> provideProductsByRecipe(@NonNull Long idRecipe);
 
-    void createProductByRecipe(@NonNull Long idRecipe, @NonNull ProductByRecipe productByRecipe);
-
-    List<UserInfo> getFinalUsersFromRecipe(@NonNull Long idRecipe);
+    Map<Long, UserInfo> provideFinalUsersFromRecipe(@NonNull Long idRecipe);
 }

@@ -26,11 +26,11 @@ public class UserInfo{
     @Column(name = "id",unique = true)
     private long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "fridgeId")
     Fridge fridge;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "recipesByUserInfoId")
     @Column(name = "recipe")

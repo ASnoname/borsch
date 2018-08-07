@@ -23,7 +23,7 @@ public class Recipe{
     @Column(name = "name",length = 30)
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userInfoId")
     private UserInfo userInfo;
 
