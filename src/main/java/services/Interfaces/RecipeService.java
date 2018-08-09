@@ -3,20 +3,19 @@ package services.Interfaces;
 import entities.ProductByRecipe;
 import entities.Recipe;
 import entities.UserInfo;
-import lombok.NonNull;
 
 import java.util.Collection;
 import java.util.Map;
 
 public interface RecipeService {
 
-    Long createRecipe(@NonNull Long idUserInfo);
+    Long createRecipe(Long idUserInfo);
 
-    Recipe provideRecipe(@NonNull Long idRecipe);
+    Recipe provideRecipe(Long idRecipe);
 
-    void deleteRecipe(@NonNull Long idRecipe);
+    void deleteRecipe(Long idRecipe);
 
-    Collection<ProductByRecipe> provideProductsByRecipe(@NonNull Long idRecipe);
+    Collection<ProductByRecipe> provideProductsByRecipe(Long idRecipe);
 
-    Map<Long, UserInfo> provideFinalUsersFromRecipe(@NonNull Long idRecipe);
+    Map<Long, UserInfo> provideFinalUsersFromRecipe(Long idRecipe);
 }

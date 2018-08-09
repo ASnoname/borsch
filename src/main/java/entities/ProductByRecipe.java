@@ -1,5 +1,6 @@
 package entities;
 
+import entities.data.ProductByRecipeData;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -39,6 +40,6 @@ public class ProductByRecipe implements Serializable {
     @Column(name = "userInfoId")
     private List<UserInfo> offers;
 
-    @Column(name = "Amount")
-    private Double amount;
+    @OneToOne
+    private ProductByRecipeData productByRecipeData;
 }

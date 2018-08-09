@@ -1,22 +1,24 @@
 package services.Interfaces;
 
-import entities.Recipe;
-import entities.UserInfo;
+import entities.data.RecipeData;
+import entities.data.UserInfoData;
 import entities.enums.StateByProduct;
-import lombok.NonNull;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface UserInfoService {
 
-    Long createUserInfo();
+    Optional<UserInfoData> createUserInfo(UserInfoData userInfoData);
 
-    void deleteUserInfo(@NonNull Long idUserInfo);
+    Boolean deleteUserInfo(Long idUserInfoData);
 
-    UserInfo provideUserInfo(@NonNull Long idUserInfo);
+    Optional<UserInfoData> provideUserInfo(Long idUserInfoData);
 
-    Collection<Recipe> getAllRecipesByUserInfo(@NonNull Long idUserInfo);
+    Optional<UserInfoData> updateUserInfo(Long idUserInfoData, UserInfoData newUserInfoData);
 
-    Map<Long, StateByProduct> getStatesForProductByRecipe(@NonNull Long idUserInfo);
+    Optional<List<RecipeData>> provideAllRecipesByUserInfo(Long idUserInfoData);
+
+    Optional<Map<Long, StateByProduct>> provideStatesForProductByRecipe(Long idUserInfoData);
 }

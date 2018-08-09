@@ -1,16 +1,15 @@
 package services.classes;
 
-import entities.Recipe;
 import entities.UserInfo;
+import entities.data.RecipeData;
+import entities.data.UserInfoData;
 import entities.enums.StateByProduct;
 import repositories.UserInfoRepository;
 import services.Interfaces.UserInfoService;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
@@ -23,42 +22,137 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public Long createUserInfo() {
+    public Optional<UserInfoData> createUserInfo(UserInfoData userInfoData) {
 
-        UserInfo userInfo = new UserInfo();
-        userInfoRepository.save(userInfo);
-        return userInfo.getId();
+        if (userInfoData == null){
+            return Optional.empty();
+        }
+        else {
+            UserInfo userInfo = new UserInfo();
+
+            userInfo.setUserInfoData(userInfoData);
+
+            userInfo = userInfoRepository.save(userInfo);
+
+            userInfo
+                    .getUserInfoData()
+                    .setId(userInfo
+                            .getId());
+
+            userInfoRepository.save(userInfo);
+
+            return Optional.of(userInfo.getUserInfoData());
+        }
     }
 
     @Override
-    public void deleteUserInfo(@NonNull Long idUserInfo) {
+    public Boolean deleteUserInfo(Long idUserInfoData) {
 
-        userInfoRepository.deleteById(idUserInfo);
+        try {
+            if (userInfoRepository.findById(idUserInfoData).isPresent()) {
+                userInfoRepository.deleteById(idUserInfoData);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (IllegalArgumentException e){
+            return false;
+        }
     }
 
     @Override
-    public UserInfo provideUserInfo(@NonNull Long idUserInfo) {
+    public Optional<UserInfoData> provideUserInfo(Long idUserInfoData) {
 
-        return userInfoRepository
-                .findById(idUserInfo)
-                .get();
+        Optional<UserInfo> userInfo;
+
+        try {
+            userInfo = userInfoRepository.findById(idUserInfoData);
+        }
+        catch (IllegalArgumentException e){
+            return Optional.empty();
+        }
+
+        return userInfo.map(UserInfo::getUserInfoData);
     }
 
     @Override
-    public Collection<Recipe> getAllRecipesByUserInfo(@NonNull Long idUserInfo) {
+    public Optional<UserInfoData> updateUserInfo(Long idUserInfoData, UserInfoData newUserInfoData) {
 
-        return userInfoRepository
-                .findById(idUserInfo)
-                .get()
-                .getRecipes();
+        Optional<UserInfo> oldUserInfo;
+
+        try {
+            oldUserInfo = userInfoRepository.findById(idUserInfoData);
+        }
+        catch (IllegalArgumentException e){
+            return Optional.empty();
+        }
+
+        if (oldUserInfo.isPresent()){
+
+            Long id = oldUserInfo
+                    .get()
+                    .getUserInfoData()
+                    .getId();
+
+            newUserInfoData
+                    .setId(id);
+
+            oldUserInfo
+                    .get()
+                    .setUserInfoData(newUserInfoData);
+
+            userInfoRepository.save(oldUserInfo.get());
+
+            return Optional.of(oldUserInfo.get().getUserInfoData());
+        }
+        else {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public Map<Long, StateByProduct> getStatesForProductByRecipe(@NonNull Long idUserInfo) {
+    public Optional<List<RecipeData>> provideAllRecipesByUserInfo(Long idUserInfoData) {
 
-        return userInfoRepository
-                .findById(idUserInfo)
-                .get()
-                .getStateByProductMap();
+        List<RecipeData> recipeDataList = new ArrayList<>();
+
+        Optional<UserInfo> userInfo;
+
+        try {
+            userInfo = userInfoRepository.findById(idUserInfoData);
+        }
+        catch (IllegalArgumentException e){
+            return Optional.empty();
+        }
+
+        if (userInfo.isPresent()){
+
+            userInfo
+                    .get()
+                    .getRecipes()
+                    .parallelStream()
+                    .forEach(recipe -> recipeDataList.add(recipe.getRecipeData()));
+
+            return Optional.of(recipeDataList);
+        }
+        else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Map<Long, StateByProduct>> provideStatesForProductByRecipe(Long idUserInfoData) {
+
+        Optional<UserInfo> userInfo;
+
+        try {
+            userInfo = userInfoRepository.findById(idUserInfoData);
+        }
+        catch (IllegalArgumentException e){
+            return Optional.empty();
+        }
+
+        return userInfo.map(UserInfo::getStateByProductMap);
     }
 }

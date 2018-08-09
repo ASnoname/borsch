@@ -1,5 +1,6 @@
 package entities;
 
+import entities.data.RecipeData;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,9 +22,6 @@ public class Recipe implements Serializable {
     @Column(name = "id",unique = true)
     private long id;
 
-    @Column(name = "name")
-    private String name;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userInfoId")
     private UserInfo userInfo;
@@ -33,4 +31,7 @@ public class Recipe implements Serializable {
     @CollectionTable(name = "productsInRecipe")
     @Column(name = "product")
     private Collection<ProductByRecipe> products;
+
+    @OneToOne
+    private RecipeData recipeData;
 }

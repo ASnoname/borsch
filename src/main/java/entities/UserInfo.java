@@ -1,5 +1,6 @@
 package entities;
 
+import entities.data.UserInfoData;
 import entities.enums.StateByProduct;
 import lombok.*;
 
@@ -43,33 +44,6 @@ public class UserInfo implements Serializable {
     @Column(name = "state")
     private Map<Long, StateByProduct> stateByProductMap;
 
-    @Column(name = "firstName")
-    private String firstName;
-
-    @Column(name = "secondName")
-    private String secondName;
-
-    @Column(name = "city")
-    private String city;
-
-    @Column(name = "unversity")
-    private String university;
-
-    @Column(name = "dormitory")
-    private String dormitory;
-
-    @Column(name = "room")
-    private String room;
-
-    @Column(name = "linkToVk")
-    private String linkToVk;
-
-    @Column(name = "linkToTelegram")
-    private String linkToTelegram;
-
-    @Column(name = "cookRate")
-    private Double cookRate;
-
-    @Column(name = "eatRate")
-    private Double eatRate;
+    @OneToOne
+    private UserInfoData userInfoData;
 }

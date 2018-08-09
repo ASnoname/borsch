@@ -26,9 +26,16 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public Optional<FoodData> provideFood(Long idFoodData){
 
-        return foodRepository
-                .findById(idFoodData)
-                .map(Food::getFoodData);
+        Optional<Food> food;
+
+        try {
+            food = foodRepository.findById(idFoodData);
+        }
+        catch (IllegalArgumentException e){
+            return Optional.empty();
+        }
+
+        return food.map(Food::getFoodData);
     }
 
     @Override
@@ -42,6 +49,13 @@ public class FoodServiceImpl implements FoodService {
 
             food.setFoodData(foodData);
 
+            food = foodRepository.save(food);
+
+            food
+                    .getFoodData()
+                    .setId(food
+                            .getId());
+
             foodRepository.save(food);
 
             return Optional.of(food.getFoodData());
@@ -52,8 +66,13 @@ public class FoodServiceImpl implements FoodService {
     public Boolean deleteFood(Long idFoodData){
 
         try {
-            foodRepository.deleteById(idFoodData);
-            return true;
+            if (foodRepository.findById(idFoodData).isPresent()) {
+                foodRepository.deleteById(idFoodData);
+                return true;
+            }
+            else {
+                return false;
+            }
         }
         catch (IllegalArgumentException e){
             return false;
@@ -90,14 +109,17 @@ public class FoodServiceImpl implements FoodService {
 
         if (oldFood.isPresent() && newFoodData.getName() != null && newFoodData.getCategory() != null){
 
-            oldFood
+            Long id = oldFood
                     .get()
                     .getFoodData()
-                    .setName(newFoodData.getName());
+                    .getId();
+
+            newFoodData
+                    .setId(id);
+
             oldFood
                     .get()
-                    .getFoodData()
-                    .setCategory(newFoodData.getCategory());
+                    .setFoodData(newFoodData);
 
             foodRepository.save(oldFood.get());
 

@@ -1,5 +1,6 @@
 package entities;
 
+import entities.data.ProductByFridgeData;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -23,9 +24,6 @@ public class ProductByFridge implements Serializable {
     @JoinColumn(name = "foodId")
     private Food food;
 
-    @Column(name = "allAmount")
-    private Double allAmount;
-
-    @Column(name = "reservedAmount")
-    private Double reservedAmount;
+    @OneToOne
+    private ProductByFridgeData productByFridgeData;
 }
