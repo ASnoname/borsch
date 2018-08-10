@@ -25,13 +25,14 @@ public class FridgeServiceImpl implements FridgeService {
 
     @Autowired
     public FridgeServiceImpl(UserInfoRepository userInfoRepository, ProductByFridgeRepository productByFridgeRepository, FoodRepository foodRepository) {
+
         this.userInfoRepository = userInfoRepository;
         this.productByFridgeRepository = productByFridgeRepository;
         this.foodRepository = foodRepository;
     }
 
     @Override
-    public Optional<List<ProductByFridgeData>> provideAllProductByFridge(Long idUserInfo) {
+    public List<ProductByFridgeData> provideAllProductByFridge(Long idUserInfo) {
 
         List<ProductByFridgeData> productByFridgeDataList = new ArrayList<>();
 
@@ -41,7 +42,7 @@ public class FridgeServiceImpl implements FridgeService {
             userInfo = userInfoRepository.findById(idUserInfo);
         }
         catch (IllegalArgumentException e){
-            return Optional.empty();
+            return null;
         }
 
         if (userInfo.isPresent()){
@@ -55,15 +56,15 @@ public class FridgeServiceImpl implements FridgeService {
                             .add(productByFridge
                                     .getProductByFridgeData()));
 
-            return Optional.of(productByFridgeDataList);
+            return productByFridgeDataList;
         }
         else {
-            return Optional.empty();
+            return null;
         }
     }
 
     @Override
-    public Boolean clearFridge(Long idUserInfo) {
+    public Boolean deleteAllProductByFridge(Long idUserInfo) {
 
         Optional<UserInfo> userInfo;
 
@@ -75,7 +76,15 @@ public class FridgeServiceImpl implements FridgeService {
         }
 
         if (userInfo.isPresent()){
-            userInfo.get().getFridge().getProducts().clear();
+
+            userInfo
+                    .get()
+                    .getFridge()
+                    .getProducts()
+                    .clear();
+
+            userInfoRepository.save(userInfo.get());
+
             return true;
         }
         else {
@@ -84,7 +93,11 @@ public class FridgeServiceImpl implements FridgeService {
     }
 
     @Override
-    public Optional<ProductByFridgeData> addProductByFridgeToFridge(Long idUserInfo, ProductByFridgeData productByFridgeData) {
+    public ProductByFridgeData addProductByFridge(Long idUserInfo, ProductByFridgeData productByFridgeData) {
+
+        if (productByFridgeData == null){
+            return null;
+        }
 
         Optional<UserInfo> userInfo;
         Optional<Food> food = findCorrectFood(productByFridgeData);
@@ -93,21 +106,24 @@ public class FridgeServiceImpl implements FridgeService {
             userInfo = userInfoRepository.findById(idUserInfo);
         }
         catch (IllegalArgumentException e){
-            return Optional.empty();
+            return null;
         }
 
         if (food.isPresent() && userInfo.isPresent()){
 
-            ProductByFridge productByFridge = saveProductByFridge(food.get(), userInfo.get(), productByFridgeData);
-
-            return Optional.of(productByFridge.getProductByFridgeData());
+            return saveProductByFridge(food.get(), userInfo.get(), productByFridgeData)
+                    .getProductByFridgeData();
         }
         else {
-            return Optional.empty();
+            return null;
         }
     }
 
     private ProductByFridge saveProductByFridge(Food food, UserInfo userInfo, ProductByFridgeData productByFridgeData) {
+
+        if (food == null || userInfo == null || productByFridgeData == null){
+            return null;
+        }
 
         ProductByFridge productByFridge = new ProductByFridge();
 
@@ -135,6 +151,8 @@ public class FridgeServiceImpl implements FridgeService {
                 .getProducts()
                 .add(productByFridge);
 
+        userInfoRepository.save(userInfo);
+
         return productByFridge;
     }
 
@@ -152,10 +170,10 @@ public class FridgeServiceImpl implements FridgeService {
     }
 
     @Override
-    public Boolean deleteProductByFridgeFromFridge(Long idProductByFridgeData) {
+    public Boolean deleteProductByFridge(Long idProductByFridge) {
 
         try {
-            Optional<ProductByFridge> productByFridge = productByFridgeRepository.findById(idProductByFridgeData);
+            Optional<ProductByFridge> productByFridge = productByFridgeRepository.findById(idProductByFridge);
 
             if (productByFridge.isPresent()){
 
@@ -166,7 +184,7 @@ public class FridgeServiceImpl implements FridgeService {
                         .remove(productByFridge.get());
 
                 productByFridgeRepository
-                        .deleteById(idProductByFridgeData);
+                        .deleteById(idProductByFridge);
 
                 return true;
             }
@@ -180,41 +198,38 @@ public class FridgeServiceImpl implements FridgeService {
     }
 
     @Override
-    public Optional<ProductByFridgeData> provideProductByFridge(Long idProductByFridgeData) {
-
-        Optional<ProductByFridge> productByFridge;
+    public ProductByFridgeData provideProductByFridge(Long idProductByFridge) {
 
         try {
-            productByFridge = productByFridgeRepository.findById(idProductByFridgeData);
+            return productByFridgeRepository
+                    .findById(idProductByFridge)
+                    .map(ProductByFridge::getProductByFridgeData)
+                    .orElse(null);
         }
         catch (IllegalArgumentException e){
-            return Optional.empty();
+            return null;
         }
-
-        return productByFridge.map(ProductByFridge::getProductByFridgeData);
     }
 
     @Override
-    public Optional<ProductByFridgeData> updateProductByFridge(Long idProductByFridgeData, ProductByFridgeData newProductByFridgeData) {
+    public ProductByFridgeData updateProductByFridge(Long idProductByFridge, ProductByFridgeData newProductByFridgeData) {
 
         Optional<ProductByFridge> oldProductByFridge;
 
         try {
-            oldProductByFridge = productByFridgeRepository.findById(idProductByFridgeData);
+            oldProductByFridge = productByFridgeRepository.findById(idProductByFridge);
         }
         catch (IllegalArgumentException e){
-            return Optional.empty();
+            return null;
         }
 
-        if (oldProductByFridge.isPresent()){
-
-            Long id = oldProductByFridge
-                    .get()
-                    .getProductByFridgeData()
-                    .getId();
+        if (oldProductByFridge.isPresent() && newProductByFridgeData != null){
 
             newProductByFridgeData
-                    .setId(id);
+                    .setId(oldProductByFridge
+                            .get()
+                            .getProductByFridgeData()
+                            .getId());
 
             oldProductByFridge
                     .get()
@@ -222,10 +237,10 @@ public class FridgeServiceImpl implements FridgeService {
 
             productByFridgeRepository.save(oldProductByFridge.get());
 
-            return Optional.of(oldProductByFridge.get().getProductByFridgeData());
+            return oldProductByFridge.get().getProductByFridgeData();
         }
         else {
-            return Optional.empty();
+            return null;
         }
     }
 }

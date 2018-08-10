@@ -1,21 +1,25 @@
 package services.Interfaces;
 
-import entities.ProductByRecipe;
-import entities.Recipe;
 import entities.UserInfo;
+import entities.data.ProductByRecipeData;
+import entities.data.RecipeData;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface RecipeService {
 
-    Long createRecipe(Long idUserInfo);
+    RecipeData createRecipe(RecipeData recipeData, Long idUserInfo);
 
-    Recipe provideRecipe(Long idRecipe);
+    RecipeData provideRecipe(Long idRecipe);
 
-    void deleteRecipe(Long idRecipe);
+    Boolean deleteRecipe(Long idRecipe);
 
-    Collection<ProductByRecipe> provideProductsByRecipe(Long idRecipe);
+    RecipeData updateRecipe(RecipeData newRecipeData, Long idRecipe);
 
-    Map<Long, UserInfo> provideFinalUsersFromRecipe(Long idRecipe);
+    List<ProductByRecipeData> provideAllProductByRecipe(Long idRecipe);
+
+    Boolean deleteAllProductByRecipe(Long idRecipe);
+
+    Map<Long, UserInfo> provideMapFinalUsers(Long idRecipe);
 }

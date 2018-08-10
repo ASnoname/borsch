@@ -6,19 +6,22 @@ import entities.enums.StateByProduct;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface UserInfoService {
 
-    Optional<UserInfoData> createUserInfo(UserInfoData userInfoData);
+    UserInfoData createUserInfo(UserInfoData userInfoData);
 
-    Boolean deleteUserInfo(Long idUserInfoData);
+    Boolean deleteUserInfo(Long idUserInfo);
 
-    Optional<UserInfoData> provideUserInfo(Long idUserInfoData);
+    UserInfoData provideUserInfo(Long idUserInfo);
 
-    Optional<UserInfoData> updateUserInfo(Long idUserInfoData, UserInfoData newUserInfoData);
+    UserInfoData updateUserInfo(Long idUserInfo, UserInfoData newUserInfoData);
 
-    Optional<List<RecipeData>> provideAllRecipesByUserInfo(Long idUserInfoData);
+    List<RecipeData> provideAllRecipesByUserInfo(Long idUserInfo);
 
-    Optional<Map<Long, StateByProduct>> provideStatesForProductByRecipe(Long idUserInfoData);
+    Map<Long, StateByProduct> provideStatesByProduct(Long idUserInfo);
+
+
+
+    Boolean changeStateByProduct(Long idUserInfo, Long idProductByRecipe, StateByProduct newState);
 }

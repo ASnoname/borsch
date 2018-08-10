@@ -1,7 +1,6 @@
 package entities;
 
 import entities.data.FoodData;
-import entities.enums.TypeFood;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -25,7 +24,7 @@ public class Food implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY)
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "productsFromFridgesByFood")
+    @CollectionTable(name = "listProductsByFood")
     @Column(name = "products")
     private List<ProductByFridge> products;
 

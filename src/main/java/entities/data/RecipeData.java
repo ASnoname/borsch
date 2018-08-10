@@ -1,5 +1,6 @@
 package entities.data;
 
+import entities.enums.StateRecipe;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,9 +15,16 @@ import java.io.Serializable;
 @Table(name = "FoodData")
 public class RecipeData implements Serializable {
 
+    {
+        this.state = StateRecipe.ACTIVE;
+    }
+
     @Column(name = "id",unique = true)
     private Long id;
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "state",nullable = false)
+    private StateRecipe state;
 }

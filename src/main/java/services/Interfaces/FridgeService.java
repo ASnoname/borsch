@@ -2,19 +2,18 @@ package services.Interfaces;
 
 import entities.data.ProductByFridgeData;
 import java.util.List;
-import java.util.Optional;
 
 public interface FridgeService {
 
-    Optional<ProductByFridgeData> addProductByFridgeToFridge(Long idUserInfo, ProductByFridgeData productByFridgeData);
+    ProductByFridgeData addProductByFridge(Long idUserInfo, ProductByFridgeData productByFridgeData);
 
-    Boolean deleteProductByFridgeFromFridge(Long idProductByFridgeData);
+    Boolean deleteProductByFridge(Long idProductByFridge);
 
-    Optional<ProductByFridgeData> provideProductByFridge(Long idProductByFridgeData);
+    ProductByFridgeData provideProductByFridge(Long idProductByFridge);
 
-    Optional<ProductByFridgeData> updateProductByFridge(Long idProductByFridgeData, ProductByFridgeData newProductByFridgeData);
+    ProductByFridgeData updateProductByFridge(Long idProductByFridge, ProductByFridgeData newProductByFridgeData);
 
-    Optional<List<ProductByFridgeData>> provideAllProductByFridge(Long idUserInfo);
+    List<ProductByFridgeData> provideAllProductByFridge(Long idUserInfo);
 
-    Boolean clearFridge(Long idUserInfo);
+    Boolean deleteAllProductByFridge(Long idUserInfo);
 }

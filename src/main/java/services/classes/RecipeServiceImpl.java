@@ -1,12 +1,13 @@
 package services.classes;
 
-import entities.ProductByRecipe;
 import entities.Recipe;
 import entities.UserInfo;
+import entities.data.ProductByRecipeData;
+import entities.data.RecipeData;
 import repositories.RecipeRepository;
 import repositories.UserInfoRepository;
+import services.Interfaces.ProductByRecipeService;
 import services.Interfaces.RecipeService;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,82 +18,212 @@ public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final UserInfoRepository userInfoRepository;
+    private final ProductByRecipeService productByRecipeService;
 
     @Autowired
-    public RecipeServiceImpl(RecipeRepository recipeRepository, UserInfoRepository userInfoRepository) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, UserInfoRepository userInfoRepository, ProductByRecipeService productByRecipeService) {
         this.recipeRepository = recipeRepository;
         this.userInfoRepository = userInfoRepository;
+        this.productByRecipeService = productByRecipeService;
     }
 
     @Override
-    public Long createRecipe(@NonNull Long idUserInfo) {
+    public RecipeData createRecipe(RecipeData recipeData, Long idUserInfo) {
+
+        if (recipeData == null){
+            return null;
+        }
 
         Recipe recipe = new Recipe();
+        Optional<UserInfo> userInfo;
 
-        recipe
-                .setUserInfo(userInfoRepository
-                        .findById(idUserInfo)
-                        .get());
+        try {
+            userInfo = userInfoRepository.findById(idUserInfo);
+        }
+        catch (IllegalArgumentException e){
+            return null;
+        }
 
-        userInfoRepository
-                .findById(idUserInfo)
-                .get()
-                .getRecipes()
-                .add(recipe);
+        if (userInfo.isPresent()){
 
-        recipeRepository.save(recipe);
+            recipe
+                    .setUserInfo(userInfo.get());
 
-        return recipe.getId();
+            userInfo
+                    .get()
+                    .getRecipes()
+                    .add(recipe);
+
+            recipe
+                    .setRecipeData(recipeData);
+
+            recipe = recipeRepository.save(recipe);
+
+            recipe
+                    .getRecipeData()
+                    .setId(recipe
+                            .getId());
+
+            recipeRepository.save(recipe);
+
+            return recipe.getRecipeData();
+        }
+        else {
+            return  null;
+        }
     }
 
     @Override
-    public Recipe provideRecipe(@NonNull Long idRecipe) {
+    public RecipeData provideRecipe(Long idRecipe) {
 
-        return recipeRepository
-                .findById(idRecipe)
-                .get();
+        try {
+            Optional<Recipe> recipe = recipeRepository.findById(idRecipe);
+
+            return recipe
+                    .map(Recipe::getRecipeData)
+                    .orElse(null);
+        }
+        catch (IllegalArgumentException e){
+            return null;
+        }
     }
 
     @Override
-    public void deleteRecipe(@NonNull Long idRecipe) {
+    public Boolean deleteRecipe(Long idRecipe) {
 
-        userInfoRepository
-                .findById(recipeRepository
-                        .findById(idRecipe)
+        try {
+            Optional<Recipe> recipe = recipeRepository.findById(idRecipe);
+
+            if (recipe.isPresent()){
+
+                if (!deleteAllProductByRecipe(idRecipe)){
+                    return false;
+                }
+
+                recipe
                         .get()
                         .getUserInfo()
-                        .getId())
-                .get()
-                .getRecipes()
-                .remove(recipeRepository
-                        .findById(idRecipe)
-                        .get());
+                        .getRecipes()
+                        .remove(recipe
+                                .get());
 
-        recipeRepository.deleteById(idRecipe);
+                recipeRepository.deleteById(idRecipe);
+
+                return true;
+            }
+            else {
+                return null;
+            }
+        }
+        catch (IllegalArgumentException e){
+            return null;
+        }
     }
 
     @Override
-    public Collection<ProductByRecipe> provideProductsByRecipe(@NonNull Long idRecipe) {
+    public RecipeData updateRecipe(RecipeData newRecipeData, Long idRecipe) {
 
-        return recipeRepository
-                .findById(idRecipe)
-                .get()
-                .getProducts();
+        try {
+            Optional<Recipe> recipe = recipeRepository.findById(idRecipe);
+
+            if (recipe.isPresent() && newRecipeData != null){
+
+                newRecipeData.setId(recipe.get().getId());
+
+                recipe.get().setRecipeData(newRecipeData);
+
+                recipeRepository.save(recipe.get());
+
+                return recipe.get().getRecipeData();
+            }
+            else {
+                return null;
+            }
+        }
+        catch (IllegalArgumentException e){
+            return null;
+        }
     }
 
     @Override
-    public Map<Long, UserInfo> provideFinalUsersFromRecipe(@NonNull Long idRecipe) {
+    public List<ProductByRecipeData> provideAllProductByRecipe(Long idRecipe) {
 
-        Map<Long, UserInfo> finalUsersFromRecipe = new HashMap<>();
+        try {
+            Optional<Recipe> recipe = recipeRepository.findById(idRecipe);
 
-        recipeRepository
-                .findById(idRecipe)
-                .get()
-                .getProducts()
-                .parallelStream()
-        .forEach(productByRecipe -> finalUsersFromRecipe
-                .put(productByRecipe.getId(),productByRecipe.getUserInfo()));
+            if (recipe.isPresent()){
 
-        return finalUsersFromRecipe;
+                List<ProductByRecipeData> result = new ArrayList<>();
+
+                recipe
+                        .get()
+                        .getProducts()
+                        .parallelStream()
+                        .forEach(p -> result
+                                .add(p.getProductByRecipeData()));
+
+                return result;
+            }
+            else {
+                return null;
+            }
+        }
+        catch (IllegalArgumentException e){
+            return null;
+        }
+    }
+
+    @Override
+    public Boolean deleteAllProductByRecipe(Long idRecipe) {
+
+        try {
+            Optional<Recipe> recipe = recipeRepository.findById(idRecipe);
+
+            if (recipe.isPresent()){
+
+                recipe
+                        .get()
+                        .getProducts()
+                        .parallelStream()
+                        .forEach(p -> productByRecipeService
+                                .deleteProductByRecipe(p.getId()));
+
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (IllegalArgumentException e){
+            return false;
+        }
+    }
+
+    @Override
+    public Map<Long, UserInfo> provideMapFinalUsers(Long idRecipe) {
+
+        try {
+            Optional<Recipe> recipe = recipeRepository.findById(idRecipe);
+
+            Map<Long, UserInfo> result = new HashMap<>();
+
+            if (recipe.isPresent()){
+
+                recipe
+                        .get()
+                        .getProducts()
+                        .parallelStream()
+                        .forEach(p -> result
+                                .put(p.getId(),p.getUserInfo()));
+
+                return result;
+            }
+            else {
+                return null;
+            }
+        }
+        catch (IllegalArgumentException e){
+            return null;
+        }
     }
 }

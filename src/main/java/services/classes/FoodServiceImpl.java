@@ -24,27 +24,23 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public Optional<FoodData> provideFood(Long idFoodData){
-
-        Optional<Food> food;
+    public FoodData provideFood(Long idFood){
 
         try {
-            food = foodRepository.findById(idFoodData);
+            return foodRepository.findById(idFood)
+                    .map(Food::getFoodData)
+                    .orElse(null);
         }
         catch (IllegalArgumentException e){
-            return Optional.empty();
+            return null;
         }
-
-        return food.map(Food::getFoodData);
     }
 
     @Override
-    public Optional<FoodData> createFood(FoodData foodData){
+    public FoodData createFood(FoodData foodData){
 
-        if (foodData == null || foodData.getCategory() == null || foodData.getName() == null){
-            return Optional.empty();
-        }
-        else {
+        if (foodData != null && foodData.getCategory() != null && foodData.getName() != null){
+
             Food food = new Food();
 
             food.setFoodData(foodData);
@@ -58,16 +54,19 @@ public class FoodServiceImpl implements FoodService {
 
             foodRepository.save(food);
 
-            return Optional.of(food.getFoodData());
+            return food.getFoodData();
+        }
+        else {
+            return null;
         }
     }
 
     @Override
-    public Boolean deleteFood(Long idFoodData){
+    public Boolean deleteFood(Long idFood){
 
         try {
-            if (foodRepository.findById(idFoodData).isPresent()) {
-                foodRepository.deleteById(idFoodData);
+            if (foodRepository.findById(idFood).isPresent()) {
+                foodRepository.deleteById(idFood);
                 return true;
             }
             else {
@@ -80,42 +79,46 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public Optional<List<FoodData>> provideListFoodStartWith(String startNameOfFood){
+    public List<FoodData> provideListFoodStartWith(String startNameOfFood){
 
-        List<FoodData> fitFoods = new ArrayList<>();
+        if (startNameOfFood == null){
+            return null;
+        }
+
+        List<FoodData> correctFoods = new ArrayList<>();
 
         StreamSupport.stream(foodRepository.findAll().spliterator(), true)
 
-                .filter(food -> (food.getFoodData().getName().length() >= startNameOfFood.length()))
-
                 .filter(food -> food.getFoodData().getName().startsWith(startNameOfFood))
 
-                .forEach(food -> fitFoods.add(food.getFoodData()));
+                .forEach(food -> correctFoods.add(food.getFoodData()));
 
-        return Optional.of(fitFoods);
+        return correctFoods;
     }
 
     @Override
-    public Optional<FoodData> updateFood(Long idFoodData, FoodData newFoodData){
+    public FoodData updateFood(Long idFood, FoodData newFoodData){
+
+        if (newFoodData == null){
+            return null;
+        }
 
         Optional<Food> oldFood;
 
         try {
-            oldFood = foodRepository.findById(idFoodData);
+            oldFood = foodRepository.findById(idFood);
         }
         catch (IllegalArgumentException e){
-            return Optional.empty();
+            return null;
         }
 
         if (oldFood.isPresent() && newFoodData.getName() != null && newFoodData.getCategory() != null){
 
-            Long id = oldFood
-                    .get()
-                    .getFoodData()
-                    .getId();
-
             newFoodData
-                    .setId(id);
+                    .setId(oldFood
+                            .get()
+                            .getFoodData()
+                            .getId());
 
             oldFood
                     .get()
@@ -123,10 +126,12 @@ public class FoodServiceImpl implements FoodService {
 
             foodRepository.save(oldFood.get());
 
-            return Optional.of(oldFood.get().getFoodData());
+            return oldFood
+                    .get()
+                    .getFoodData();
         }
         else {
-            return Optional.empty();
+            return null;
         }
     }
 }

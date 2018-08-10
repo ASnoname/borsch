@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 public class UserInfoController {
@@ -18,118 +17,49 @@ public class UserInfoController {
     private final UserInfoService userInfoService;
 
     public UserInfoController(UserInfoService userInfoService) {
+
         this.userInfoService = userInfoService;
     }
 
-    @GetMapping(USERS_PATH)
+    @GetMapping(USERS_PATH + "new")
     public @ResponseBody
     BaseResponse<UserInfoData> createUserInfo(@RequestBody UserInfoData userInfoData) {
 
-        BaseResponse<UserInfoData> response = new BaseResponse<>();
-
-        Optional<UserInfoData> resultUserInfoData = userInfoService.createUserInfo(userInfoData);
-
-        if (resultUserInfoData.isPresent()) {
-            response.setStatus(Resources.SUCCESS_STATUS);
-            response.setData(resultUserInfoData.get());
-        } else {
-            response.setStatus(Resources.UNSUCCESS_STATUS);
-            response.setMessage("Не удалось создать пользователя!");
-        }
-
-        return response;
+        return new BaseResponse<>(userInfoService.createUserInfo(userInfoData));
     }
 
-    @DeleteMapping(USERS_PATH + "{idUserInfoData}")
+    @DeleteMapping(USERS_PATH + "{id}")
     public @ResponseBody
-    BaseResponse deleteUserInfo(@PathVariable Long idUserInfoData) {
+    BaseResponse deleteUserInfo(@PathVariable(name = "id") Long id) {
 
-        BaseResponse response = new BaseResponse();
-
-        if (userInfoService.deleteUserInfo(idUserInfoData)) {
-            response.setStatus(Resources.SUCCESS_STATUS);
-        }
-        else {
-            response.setStatus(Resources.UNSUCCESS_STATUS);
-            response.setMessage("Пользователь с таким id не удален!");
-        }
-
-        return response;
+        return new BaseResponse(userInfoService.deleteUserInfo(id));
     }
 
-    @GetMapping(USERS_PATH + "{idUserInfoData}")
+    @GetMapping(USERS_PATH + "{id}")
     public @ResponseBody
-    BaseResponse<UserInfoData> provideUserInfo(@PathVariable Long idUserInfoData) {
+    BaseResponse<UserInfoData> provideUserInfo(@PathVariable(name = "id") Long id) {
 
-        BaseResponse<UserInfoData> response = new BaseResponse<>();
-
-        Optional<UserInfoData> userInfoData = userInfoService.provideUserInfo(idUserInfoData);
-
-        if (userInfoData.isPresent()) {
-            response.setStatus(Resources.SUCCESS_STATUS);
-            response.setData(userInfoData.get());
-        } else {
-            response.setStatus(Resources.UNSUCCESS_STATUS);
-            response.setMessage("Пользователь с таким id не найден!");
-        }
-
-        return response;
+        return new BaseResponse<>(userInfoService.provideUserInfo(id));
     }
 
-    @PatchMapping(USERS_PATH + "{idUserInfoData}")
+    @PatchMapping(USERS_PATH + "{id}")
     public @ResponseBody
-    BaseResponse<UserInfoData> updateUserInfo(@PathVariable Long idUserInfoData, @RequestBody UserInfoData userInfoData) {
+    BaseResponse<UserInfoData> updateUserInfo(@PathVariable(name = "id") Long id, @RequestBody UserInfoData userInfoData) {
 
-        BaseResponse<UserInfoData> response = new BaseResponse<>();
-
-        Optional<UserInfoData> resultUserInfoData = userInfoService.updateUserInfo(idUserInfoData, userInfoData);
-
-        if (resultUserInfoData.isPresent()) {
-            response.setStatus(Resources.SUCCESS_STATUS);
-            response.setData(resultUserInfoData.get());
-        } else {
-            response.setStatus(Resources.UNSUCCESS_STATUS);
-            response.setMessage("Не удалось изменить пользователя!");
-        }
-
-        return response;
+        return new BaseResponse<>(userInfoService.updateUserInfo(id, userInfoData));
     }
 
-    @GetMapping(USERS_PATH + "{idUserInfoData}" + "/recipes")
+    @GetMapping(USERS_PATH + "{id}" + "/recipes")
     public @ResponseBody
-    BaseResponse<List<RecipeData>> provideListRecipe(@PathVariable Long idUserInfoData) {
+    BaseResponse<List<RecipeData>> provideListRecipe(@PathVariable(name = "id") Long id) {
 
-        BaseResponse<List<RecipeData>> response = new BaseResponse<>();
-
-        Optional<List<RecipeData>> recipes = userInfoService.provideAllRecipesByUserInfo(idUserInfoData);
-
-        if (recipes.isPresent()) {
-            response.setStatus(Resources.SUCCESS_STATUS);
-            response.setData(recipes.get());
-        } else {
-            response.setStatus(Resources.UNSUCCESS_STATUS);
-            response.setMessage("Пользователь с таким id не найден!");
-        }
-
-        return response;
+        return new BaseResponse<>(userInfoService.provideAllRecipesByUserInfo(id));
     }
 
-    @GetMapping(USERS_PATH + "{idUserInfoData}" + "/states")
+    @GetMapping(USERS_PATH + "{id}" + "/states")
     public @ResponseBody
-    BaseResponse<Map<Long, StateByProduct>> provideMapStates(@PathVariable Long idUserInfoData) {
+    BaseResponse<Map<Long, StateByProduct>> provideMapStates(@PathVariable(name = "id") Long id) {
 
-        BaseResponse<Map<Long, StateByProduct>> response = new BaseResponse<>();
-
-        Optional<Map<Long, StateByProduct>> states = userInfoService.provideStatesForProductByRecipe(idUserInfoData);
-
-        if (states.isPresent()) {
-            response.setStatus(Resources.SUCCESS_STATUS);
-            response.setData(states.get());
-        } else {
-            response.setStatus(Resources.UNSUCCESS_STATUS);
-            response.setMessage("Пользователь с таким id не найден!");
-        }
-
-        return response;
+        return new BaseResponse<>(userInfoService.provideStatesByProduct(id));
     }
 }

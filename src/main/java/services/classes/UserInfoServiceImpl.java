@@ -18,16 +18,15 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Autowired
     public UserInfoServiceImpl(final UserInfoRepository userInfoRepository) {
+
         this.userInfoRepository = userInfoRepository;
     }
 
     @Override
-    public Optional<UserInfoData> createUserInfo(UserInfoData userInfoData) {
+    public UserInfoData createUserInfo(UserInfoData userInfoData) {
 
-        if (userInfoData == null){
-            return Optional.empty();
-        }
-        else {
+        if (userInfoData != null){
+
             UserInfo userInfo = new UserInfo();
 
             userInfo.setUserInfoData(userInfoData);
@@ -41,16 +40,19 @@ public class UserInfoServiceImpl implements UserInfoService {
 
             userInfoRepository.save(userInfo);
 
-            return Optional.of(userInfo.getUserInfoData());
+            return userInfo.getUserInfoData();
+        }
+        else {
+            return null;
         }
     }
 
     @Override
-    public Boolean deleteUserInfo(Long idUserInfoData) {
+    public Boolean deleteUserInfo(Long idUserInfo) {
 
         try {
-            if (userInfoRepository.findById(idUserInfoData).isPresent()) {
-                userInfoRepository.deleteById(idUserInfoData);
+            if (userInfoRepository.findById(idUserInfo).isPresent()) {
+                userInfoRepository.deleteById(idUserInfo);
                 return true;
             }
             else {
@@ -63,41 +65,39 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public Optional<UserInfoData> provideUserInfo(Long idUserInfoData) {
-
-        Optional<UserInfo> userInfo;
+    public UserInfoData provideUserInfo(Long idUserInfo) {
 
         try {
-            userInfo = userInfoRepository.findById(idUserInfoData);
+            Optional<UserInfo> userInfo = userInfoRepository.findById(idUserInfo);
+
+            return userInfo
+                    .map(UserInfo::getUserInfoData)
+                    .orElse(null);
         }
         catch (IllegalArgumentException e){
-            return Optional.empty();
+            return null;
         }
-
-        return userInfo.map(UserInfo::getUserInfoData);
     }
 
     @Override
-    public Optional<UserInfoData> updateUserInfo(Long idUserInfoData, UserInfoData newUserInfoData) {
+    public UserInfoData updateUserInfo(Long idUserInfo, UserInfoData newUserInfoData) {
 
         Optional<UserInfo> oldUserInfo;
 
         try {
-            oldUserInfo = userInfoRepository.findById(idUserInfoData);
+            oldUserInfo = userInfoRepository.findById(idUserInfo);
         }
         catch (IllegalArgumentException e){
-            return Optional.empty();
+            return null;
         }
 
-        if (oldUserInfo.isPresent()){
-
-            Long id = oldUserInfo
-                    .get()
-                    .getUserInfoData()
-                    .getId();
+        if (oldUserInfo.isPresent() && newUserInfoData != null){
 
             newUserInfoData
-                    .setId(id);
+                    .setId(oldUserInfo
+                            .get()
+                            .getUserInfoData()
+                            .getId());
 
             oldUserInfo
                     .get()
@@ -105,25 +105,25 @@ public class UserInfoServiceImpl implements UserInfoService {
 
             userInfoRepository.save(oldUserInfo.get());
 
-            return Optional.of(oldUserInfo.get().getUserInfoData());
+            return oldUserInfo.get().getUserInfoData();
         }
         else {
-            return Optional.empty();
+            return null;
         }
     }
 
     @Override
-    public Optional<List<RecipeData>> provideAllRecipesByUserInfo(Long idUserInfoData) {
+    public List<RecipeData> provideAllRecipesByUserInfo(Long idUserInfo) {
 
         List<RecipeData> recipeDataList = new ArrayList<>();
 
         Optional<UserInfo> userInfo;
 
         try {
-            userInfo = userInfoRepository.findById(idUserInfoData);
+            userInfo = userInfoRepository.findById(idUserInfo);
         }
         catch (IllegalArgumentException e){
-            return Optional.empty();
+            return null;
         }
 
         if (userInfo.isPresent()){
@@ -134,25 +134,39 @@ public class UserInfoServiceImpl implements UserInfoService {
                     .parallelStream()
                     .forEach(recipe -> recipeDataList.add(recipe.getRecipeData()));
 
-            return Optional.of(recipeDataList);
+            return recipeDataList;
         }
         else {
-            return Optional.empty();
+            return null;
         }
     }
 
     @Override
-    public Optional<Map<Long, StateByProduct>> provideStatesForProductByRecipe(Long idUserInfoData) {
-
-        Optional<UserInfo> userInfo;
+    public Map<Long, StateByProduct> provideStatesByProduct(Long idUserInfo) {
 
         try {
-            userInfo = userInfoRepository.findById(idUserInfoData);
+            Optional<UserInfo> userInfo = userInfoRepository.findById(idUserInfo);
+
+            return userInfo
+                    .map(UserInfo::getStateByProductMap)
+                    .orElse(null);
         }
         catch (IllegalArgumentException e){
-            return Optional.empty();
+            return null;
         }
+    }
 
-        return userInfo.map(UserInfo::getStateByProductMap);
+    @Override
+    public Boolean changeStateByProduct(Long idUserInfo, Long idProductByRecipe, StateByProduct newState) {
+
+        // изменить состояние у юзера в стейтах
+        // добавить этого юзера в офферы по этому продукту если стейт положит, если отриц то удалить из его стейтов
+
+        // ACCEPTED -> DENIED
+        // ACCEPTED -> WAITING
+        // WAITING -> DENIED
+
+
+
     }
 }

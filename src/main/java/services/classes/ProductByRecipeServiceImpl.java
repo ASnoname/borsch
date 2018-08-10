@@ -2,13 +2,17 @@ package services.classes;
 
 import entities.ProductByRecipe;
 import entities.UserInfo;
+import entities.data.ProductByRecipeData;
+import entities.data.UserInfoData;
 import repositories.ProductByRecipeRepository;
 import repositories.UserInfoRepository;
 import services.Interfaces.ProductByRecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductByRecipeServiceImpl implements ProductByRecipeService {
@@ -24,52 +28,98 @@ public class ProductByRecipeServiceImpl implements ProductByRecipeService {
     }
 
     @Override
-    public Long createIdProductByRecipe(Long idRecipe) {
+    public ProductByRecipeData addProductByRecipe(Long idRecipe, ProductByRecipeData productByRecipeData) {
         return null;
     }
 
     @Override
-    public Long provideIdProductByRecipe(ProductByRecipe productByRecipe) {
+    public Boolean deleteProductByRecipe(Long idProductByRecipe) {
         return null;
     }
 
     @Override
-    public ProductByRecipe provideProductByRecipe(Long idProductByRecipe) {
+    public ProductByRecipeData provideProductByRecipe(Long idProductByRecipe) {
         return null;
     }
 
     @Override
-    public void deleteProductByRecipe(Long idProductByRecipe) {
-
-    }
-
-    @Override
-    public List<UserInfo> provideOffers(Long idProductByRecipe) {
+    public ProductByRecipeData updateProductByRecipe(Long idProductByRecipe, ProductByRecipeData newProductByRecipeData) {
         return null;
     }
 
     @Override
-    public Long provideIdRecipe(Long idProductByRecipe) {
+    public List<UserInfoData> provideOffers(Long idProductByRecipe) {
+
+        List<UserInfoData> userInfoDataList = new ArrayList<>();
+
+        Optional<ProductByRecipe> productByRecipe;
+
+        try {
+            productByRecipe = productByRecipeRepository.findById(idProductByRecipe);
+        }
+        catch (IllegalArgumentException e){
+            return null;
+        }
+
+        if (productByRecipe.isPresent()){
+
+            productByRecipe
+                    .get()
+                    .getOffers()
+                    .parallelStream()
+                    .forEach(userInfo -> userInfoDataList.add(userInfo.getUserInfoData()));
+
+            return userInfoDataList;
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Override
+    public Boolean deleteUserInfoFromOffers(Long idProductByRecipe, Long idUserInfo) {
+
+        Optional<ProductByRecipe> productByRecipe;
+        Optional<UserInfo> userInfo;
+
+        try {
+            productByRecipe = productByRecipeRepository.findById(idProductByRecipe);
+            userInfo = userInfoRepository.findById(idUserInfo);
+        }
+        catch (IllegalArgumentException e){
+            return null;
+        }
+
+        if (productByRecipe.isPresent() && userInfo.isPresent()){
+
+            productByRecipe
+                    .get()
+                    .getOffers()
+                    .remove(userInfo
+                            .get());
+//
+//            return userInfo
+//                    .get()
+//                    .getUserInfoData();
+            return null;
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Override
+    public Boolean clearOffers(Long idProductByRecipe) {
         return null;
     }
 
     @Override
-    public Long provideIdFood(Long idProductByRecipe) {
+    public Boolean clearFinalUserInfo(Long idProductByRecipe) {
         return null;
     }
 
     @Override
-    public Long provideIdUserInfo(Long idProductByRecipe) {
+    public UserInfoData changeFinalUserInfo(Long idProductByRecipe, Long newIdUserInfo) {
         return null;
-    }
-
-    @Override
-    public void clearFinalUserInfo(Long idProductByRecipe) {
-
-    }
-
-    @Override
-    public void clearOffers(Long idProductByRecipe) {
-
     }
 }

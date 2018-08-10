@@ -1,29 +1,24 @@
 package services.Interfaces;
 
-import entities.ProductByRecipe;
-import entities.UserInfo;
-
+import entities.data.ProductByRecipeData;
+import entities.data.UserInfoData;
 import java.util.List;
 
 public interface ProductByRecipeService {
 
-    Long createIdProductByRecipe(Long idRecipe, Long idFood);
+    ProductByRecipeData addProductByRecipe(Long idRecipe, ProductByRecipeData productByRecipeData);
 
-    ProductByRecipe provideProductByRecipe(Long idProductByRecipe);
+    Boolean deleteProductByRecipe(Long idProductByRecipe);
 
-    void deleteProductByRecipe(Long idProductByRecipe);
+    ProductByRecipeData provideProductByRecipe(Long idProductByRecipe);
 
-    List<UserInfo> provideOffers(Long idProductByRecipe);
+    ProductByRecipeData updateProductByRecipe(Long idProductByRecipe, ProductByRecipeData newProductByRecipeData);
 
-    void addUserInfoToOffers(Long idProductByRecipe, Long idUserInfo);
+    List<UserInfoData> provideOffers(Long idProductByRecipe);
 
-    void deleteUserInfoFromOffers(Long idProductByRecipe, Long idUserInfo);
+    Boolean deleteUserInfoFromOffers(Long idProductByRecipe, Long idUserInfo);
 
-    void clearOffers(Long idProductByRecipe);
+    Boolean clearFinalUserInfo(Long idProductByRecipe);
 
-    Long provideIdUserInfo(Long idProductByRecipe);
-
-    void clearFinalUserInfo(Long idProductByRecipe);
-
-    void changeFinalUserInfo(Long idProductByRecipe, Long newIdUserInfo);
+    UserInfoData changeFinalUserInfo(Long idProductByRecipe, Long newIdUserInfo);
 }

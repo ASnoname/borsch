@@ -7,13 +7,13 @@ import java.util.Optional;
 
 public interface FoodService {
 
-    Optional<FoodData> provideFood(Long idFoodData);
+    FoodData provideFood(Long idFood);
 
-    Boolean deleteFood(Long idFoodData);
+    Boolean deleteFood(Long idFood);
 
-    Optional<FoodData> createFood(FoodData foodData);
+    FoodData createFood(FoodData foodData);
 
-    Optional<List<FoodData>> provideListFoodStartWith(String startNameOfFood);
+    List<FoodData> provideListFoodStartWith(String startNameOfFood);
 
-    Optional<FoodData> updateFood(Long idFoodData, FoodData newFoodData);
+    FoodData updateFood(Long idFood, FoodData newFoodData);
 }
