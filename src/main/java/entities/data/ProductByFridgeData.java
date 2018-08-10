@@ -23,6 +23,6 @@ public class ProductByFridgeData implements Serializable {
     @Column(name = "allAmount")
     private Double allAmount;
 
-    @Column(name = "reservedAmount")
-    private Double reservedAmount;
+    @Column(name = "freeAmount")
+    private Double freeAmount;
 }

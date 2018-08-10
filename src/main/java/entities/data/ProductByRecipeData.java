@@ -1,8 +1,11 @@
 package entities.data;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import java.io.Serializable;
 
+@Data
 public class ProductByRecipeData implements Serializable {
 
     @Column(name = "id",unique = true)

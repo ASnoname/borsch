@@ -23,6 +23,10 @@ public class Fridge implements Serializable {
     @Column(name = "id",unique = true)
     private long id;
 
+    @OneToOne
+    @JoinColumn(name = "userInfoId")
+    UserInfo userInfo;
+
     @OneToMany(fetch = FetchType.LAZY)
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "productsInFridge")
